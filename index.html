@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard ผลการพัฒนาคุณภาพนักเรียน โรงเรียนบ้านโคกม่วย</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --navy:#12233F; --blue:#1E4C8A; --blue-2:#2E6DBE; --teal:#0E9494;
+  --mango:#F5A524; --coral:#EF6B5A; --leaf:#2FA84F; --violet:#7A5AF8;
+  --bg:#EFF3F9; --card:#FFFFFF; --line:#E1E8F3; --muted:#65748F; --ink:#12233F;
+  --r:16px; --shadow:0 1px 2px rgba(18,35,63,.06), 0 8px 24px rgba(18,35,63,.06);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:"IBM Plex Sans Thai",system-ui,sans-serif;
+  background:var(--bg); color:var(--ink); font-size:15px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4,.display{font-family:"Bai Jamjuree","IBM Plex Sans Thai",sans-serif;font-weight:600;letter-spacing:-.01em}
+a{color:inherit}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- โครงหน้า ---------- */
+.app{display:grid;grid-template-columns:266px 1fr;min-height:100vh}
+
+/* ---------- เมนูด้านข้าง ---------- */
+.side{
+  background:linear-gradient(170deg,#14284A 0%,#0E1D36 55%,#0B1730 100%);
+  color:#DCE6F5;position:sticky;top:0;height:100vh;overflow-y:auto;
+  padding:22px 14px 40px;z-index:40;
+}
+.brand{display:flex;gap:12px;align-items:flex-start;padding:0 8px 18px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:14px}
+.crest{
+  width:44px;height:44px;flex:0 0 44px;border-radius:12px;
+  background:linear-gradient(140deg,var(--mango),var(--coral));
+  display:grid;place-items:center;font-family:"Bai Jamjuree";font-weight:700;color:#3A1B08;font-size:17px;
+}
+.brand b{display:block;font-family:"Bai Jamjuree";font-size:15.5px;color:#fff;line-height:1.35}
+.brand span{font-size:11.5px;color:#8FA6C7;display:block;line-height:1.5}
+.nav-label{font-size:11px;letter-spacing:.14em;color:#7E96BC;padding:8px 10px 6px;text-transform:uppercase}
+.nav button{
+  display:flex;gap:11px;align-items:center;padding:9px 10px;border-radius:11px;
+  width:100%;border:0;background:transparent;font:inherit;text-align:left;cursor:pointer;
+  color:#C7D5EC;font-size:13.6px;margin-bottom:2px;
+  transition:background .18s,color .18s,transform .18s;
+}
+.nav button:hover{background:rgba(255,255,255,.07);color:#fff}
+.nav button.on{background:linear-gradient(90deg,rgba(46,109,190,.95),rgba(46,109,190,.35));color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.nav button.on .idx{background:var(--mango);color:#3A1B08;border-color:transparent}
+.idx{
+  flex:0 0 26px;height:26px;border-radius:8px;display:grid;place-items:center;
+  font-family:"Bai Jamjuree";font-size:11.5px;font-weight:600;
+  border:1px solid rgba(255,255,255,.18);color:#9DB4D6;background:rgba(255,255,255,.04);
+}
+.side-foot{margin-top:18px;padding:12px 12px 0;border-top:1px solid rgba(255,255,255,.1);font-size:11.5px;color:#7E96BC}
+
+/* ---------- แถบบน ---------- */
+.top{
+  position:sticky;top:0;z-index:30;background:rgba(255,255,255,.86);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);padding:12px 26px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;
+}
+.top .eyebrow{font-size:11.5px;color:var(--muted);letter-spacing:.1em}
+.top h1{font-size:17px;margin:0;line-height:1.3}
+.chip{
+  font-size:12px;padding:4px 11px;border-radius:999px;background:#E8F0FC;color:var(--blue);
+  border:1px solid #CFE0F7;font-weight:500;white-space:nowrap;
+}
+.chip.warn{background:#FFF4E2;color:#96600A;border-color:#F6DCAE}
+.chip.ok{background:#E7F7EC;color:#1D7A38;border-color:#BFE8CB}
+.spacer{flex:1}
+.btn{
+  border:1px solid var(--line);background:#fff;border-radius:10px;padding:7px 14px;font:inherit;font-size:13px;
+  cursor:pointer;color:var(--ink);transition:.18s;
+}
+.btn:hover{border-color:var(--blue-2);color:var(--blue);box-shadow:0 2px 8px rgba(30,76,138,.12)}
+.burger{display:none}
+
+/* ---------- เนื้อหา ---------- */
+main{padding:26px 26px 70px;max-width:1240px}
+.page-head{margin-bottom:20px}
+.page-head .kicker{
+  display:inline-flex;align-items:center;gap:9px;font-size:12px;color:var(--muted);margin-bottom:6px
+}
+.page-head .kicker b{
+  font-family:"Bai Jamjuree";background:var(--navy);color:#fff;border-radius:7px;padding:2px 8px;font-size:11.5px
+}
+.page-head h2{font-size:25px;margin:0 0 6px;line-height:1.25}
+.page-head p{margin:0;color:var(--muted);font-size:13.6px;max-width:74ch}
+
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow);
+  animation:rise .45s cubic-bezier(.2,.7,.3,1) both;
+}
+.card h3{font-size:15px;margin:0 0 3px}
+.card .sub{font-size:12.3px;color:var(--muted);margin:0 0 14px}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.card{animation:none}}
+
+/* ---------- การ์ดตัวเลข ---------- */
+.stat{position:relative;overflow:hidden;padding:17px 18px}
+.stat::after{content:"";position:absolute;inset:0 auto 0 0;width:5px;background:var(--c,var(--blue))}
+.stat .lab{font-size:12.4px;color:var(--muted);display:block;margin-bottom:2px}
+.stat .val{font-family:"Bai Jamjuree";font-size:29px;font-weight:600;line-height:1.1;color:var(--c,var(--blue))}
+.stat .val small{font-size:14px;font-weight:500;color:var(--muted);margin-left:3px}
+.stat .foot{font-size:11.8px;color:var(--muted);margin-top:4px}
+
+/* ---------- แถบเทียบระดับ (signature) ---------- */
+.cmp{padding:14px 0;border-bottom:1px dashed var(--line)}
+.cmp:last-child{border-bottom:0}
+.cmp-top{display:flex;align-items:baseline;gap:10px;margin-bottom:11px;flex-wrap:wrap}
+.cmp-top .name{font-family:"Bai Jamjuree";font-size:14.5px}
+.cmp-top .school{font-family:"Bai Jamjuree";font-size:20px;color:var(--blue);font-weight:600}
+.delta{font-size:11.8px;padding:2px 8px;border-radius:999px;font-weight:500}
+.delta.up{background:#E7F7EC;color:#1B7A36}
+.delta.down{background:#FDECEA;color:#B23B2B}
+.track{position:relative;height:34px}
+.track .rail{position:absolute;left:0;right:0;top:13px;height:8px;border-radius:99px;background:#EDF1F8;overflow:hidden}
+.track .fill{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:linear-gradient(90deg,var(--blue-2),var(--teal))}
+.track .tick{position:absolute;top:5px;width:2px;height:24px;background:var(--muted);opacity:.55}
+.track .tick.nat{background:var(--coral);opacity:.9}
+.track .tick span{
+  position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:10.5px;color:var(--muted);white-space:nowrap
+}
+.track .tick.nat span{color:var(--coral)}
+.track .dot{
+  position:absolute;top:8px;width:18px;height:18px;border-radius:50%;background:#fff;
+  border:4px solid var(--blue);transform:translateX(-9px);box-shadow:0 2px 6px rgba(30,76,138,.35)
+}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11.8px;color:var(--muted);margin-top:6px}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:5px;vertical-align:-1px}
+
+/* ---------- ตาราง ---------- */
+.tbl-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;font-size:13.4px;min-width:520px;background:#fff}
+thead th{
+  background:var(--navy);color:#fff;font-family:"Bai Jamjuree";font-weight:500;font-size:13px;
+  padding:10px 12px;text-align:center;white-space:nowrap;
+}
+thead th:first-child{text-align:left}
+tbody td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:center}
+tbody td:first-child{text-align:left;font-weight:500}
+tbody tr:nth-child(even){background:#F8FAFD}
+tbody tr:hover{background:#EEF4FD}
+tfoot td{padding:10px 12px;background:#EAF0F9;font-weight:600;text-align:center;border-top:2px solid var(--blue)}
+tfoot td:first-child{text-align:left}
+.pass{color:var(--leaf);font-weight:600}
+.pass::before{content:"✓ "}
+.fail{color:var(--coral);font-weight:600}
+
+/* ---------- อื่น ๆ ---------- */
+.notice{
+  display:flex;gap:11px;align-items:flex-start;background:#FFF8EC;border:1px solid #F4DDB0;
+  border-radius:12px;padding:11px 14px;font-size:12.8px;color:#7A5411;margin-bottom:18px
+}
+.notice b{font-family:"Bai Jamjuree"}
+.bars{display:grid;gap:11px}
+.bar-row{display:grid;grid-template-columns:minmax(120px,190px) 1fr 58px;gap:12px;align-items:center;font-size:13.2px}
+.bar-track{height:22px;border-radius:7px;background:#EDF1F8;overflow:hidden}
+.bar-fill{height:100%;border-radius:7px;transition:width .6s cubic-bezier(.2,.7,.3,1)}
+.bar-val{text-align:right;font-family:"Bai Jamjuree";font-size:13.5px;color:var(--blue)}
+.chart-box{position:relative;height:290px}
+.chart-box.tall{height:340px}
+.pill-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.pill{font-size:12.2px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 13px;color:var(--muted)}
+.pill b{color:var(--ink);font-family:"Bai Jamjuree"}
+.hero{
+  background:linear-gradient(135deg,#14284A,#1E4C8A 58%,#0E9494);color:#fff;border-radius:20px;
+  padding:26px 28px;box-shadow:0 14px 34px rgba(18,35,63,.22);margin-bottom:18px;position:relative;overflow:hidden
+}
+.hero::after{
+  content:"";position:absolute;right:-70px;top:-70px;width:250px;height:250px;border-radius:50%;
+  background:radial-gradient(circle,rgba(245,165,36,.45),transparent 68%)
+}
+.hero .eyebrow{font-size:12px;letter-spacing:.16em;color:#A9C6EC;margin-bottom:7px}
+.hero h2{font-size:27px;margin:0 0 8px;color:#fff;line-height:1.28}
+.hero p{margin:0;color:#C9DBF2;font-size:13.6px;max-width:66ch}
+.hero-stats{display:flex;gap:26px;flex-wrap:wrap;margin-top:20px;position:relative;z-index:2}
+.hero-stats div span{display:block;font-size:11.8px;color:#A9C6EC}
+.hero-stats div b{font-family:"Bai Jamjuree";font-size:24px;font-weight:600}
+.menu-card{
+  display:block;width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer;
+  background:#fff;border:1px solid var(--line);border-radius:14px;
+  padding:15px 16px;box-shadow:var(--shadow);transition:.2s;
+}
+.menu-card:hover{transform:translateY(-3px);border-color:var(--blue-2);box-shadow:0 10px 26px rgba(30,76,138,.14)}
+.menu-card b{display:block;font-family:"Bai Jamjuree";font-size:14px;margin:7px 0 2px}
+.menu-card span{font-size:12.2px;color:var(--muted)}
+.menu-card .n{font-family:"Bai Jamjuree";font-size:11.5px;color:#fff;background:var(--c,var(--blue));border-radius:7px;padding:2px 8px}
+
+@media (max-width:960px){
+  .app{grid-template-columns:1fr}
+  .side{position:fixed;left:0;top:0;width:264px;transform:translateX(-100%);transition:transform .25s;z-index:50}
+  .side.open{transform:none}
+  .backdrop{display:none;position:fixed;inset:0;background:rgba(11,23,48,.45);z-index:45}
+  .backdrop.open{display:block}
+  .burger{display:inline-flex}
+  .g3,.g4{grid-template-columns:repeat(2,1fr)}
+  main{padding:18px 15px 60px}
+  .top{padding:11px 15px}
+}
+@media (max-width:600px){
+  .g2,.g3,.g4{grid-template-columns:1fr}
+  .bar-row{grid-template-columns:1fr;gap:4px}
+  .bar-val{text-align:left}
+}
+@media print{
+  .side,.top,.burger{display:none!important}
+  .app{grid-template-columns:1fr}
+  .card{break-inside:avoid;box-shadow:none}
+  body{background:#fff}
+}
+:focus-visible{outline:3px solid var(--mango);outline-offset:2px;border-radius:6px}
+</style>
+</head>
+<body>
+
+<div class="app">
+<div class="backdrop" id="backdrop"></div>
+<aside class="side" id="side">
+  <div class="brand">
+    <div class="crest">คม</div>
+    <div>
+      <b>โรงเรียนบ้านโคกม่วย</b>
+      <span>สพป.หนองบัวลำภู เขต 1</span>
+      <span>ปีการศึกษา 2568</span>
+    </div>
+  </div>
+  <div class="nav-label">ภาพรวม</div>
+  <nav class="nav" id="nav"></nav>
+  <div class="side-foot">
+    ข้อมูลนักเรียน: ปีการศึกษา 2569 (10 มิ.ย. 2569)<br>ผลการทดสอบ RT/NT/O-NET ฯลฯ: ปีการศึกษา 2568<br>ปรับปรุงข้อมูลได้ที่ตัวแปร <code>DATA</code> ในไฟล์นี้
+  </div>
+</aside>
+
+<div>
+  <header class="top">
+    <button class="btn burger" id="burger" aria-label="เปิดเมนู">☰</button>
+    <div>
+      <div class="eyebrow">DASHBOARD คุณภาพผู้เรียน</div>
+      <h1 id="topTitle">ภาพรวมผลการพัฒนาคุณภาพนักเรียน</h1>
+    </div>
+    <div class="spacer"></div>
+    <span class="chip" id="yearChip">ปีการศึกษา 2568</span>
+    <span class="chip warn" id="dataChip">ข้อมูลบางส่วนเป็นตัวอย่าง</span>
+    <button class="btn" onclick="window.print()">พิมพ์ / บันทึก PDF</button>
+  </header>
+  <main id="view"></main>
+</div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   ส่วนที่ 1 : ข้อมูล — แก้ไขตัวเลขทั้งหมดได้ที่บล็อกนี้เพียงจุดเดียว
+   real:true  = ข้อมูลจริงที่ยืนยันแล้ว
+   real:false = ข้อมูลตัวอย่างสำหรับ prototype (ระบบจะขึ้นป้ายเตือนอัตโนมัติ)
+   ═══════════════════════════════════════════════════════════════ */
+const DATA = {
+
+  /* 1. ข้อมูลนักเรียน — ปีการศึกษา 2569 (คนละปีกับผล RT/NT/O-NET ปีการศึกษา 2568) */
+  students:{ real:true, asOf:"10 มิถุนายน 2569", schoolYear:"2569",
+    rows:[
+      {level:"อนุบาล 2", m:3, f:2},
+      {level:"อนุบาล 3", m:3, f:7},
+      {level:"ประถมศึกษาปีที่ 1", m:3, f:5},
+      {level:"ประถมศึกษาปีที่ 2", m:1, f:3},
+      {level:"ประถมศึกษาปีที่ 3", m:1, f:0},
+      {level:"ประถมศึกษาปีที่ 4", m:3, f:3},
+      {level:"ประถมศึกษาปีที่ 5", m:2, f:1},
+      {level:"ประถมศึกษาปีที่ 6", m:1, f:1}
+    ],
+    staff:{
+      roles:[
+        {name:"ผู้บริหารสถานศึกษา", n:1},
+        {name:"ข้าราชการครู", n:3},
+        {name:"พนักงานราชการ", n:1},
+        {name:"ธุรการโรงเรียน", n:1},
+        {name:"นักการภารโรง", n:1}
+      ],
+      education:[
+        {name:"ประถมศึกษา", n:1},
+        {name:"ปริญญาตรี", n:5},
+        {name:"ปริญญาโท", n:1}
+      ]
+    }
+  },
+
+  /* แนวโน้มจำนวนนักเรียนย้อนหลัง 4 ปีการศึกษา (2565–2568) — ข้อมูลจริง */
+  enrollment:{ real:true, years:["2565","2566","2567","2568"],
+    rows:[
+      {level:"อนุบาล 2", values:[null,4,4,10], trend:"เพิ่มขึ้น"},
+      {level:"อนุบาล 3", values:[5,1,5,7], trend:"เพิ่มขึ้น"},
+      {level:"ประถมศึกษาปีที่ 1", values:[3,5,1,4], trend:"เพิ่มขึ้น"},
+      {level:"ประถมศึกษาปีที่ 2", values:[2,3,5,1], trend:"ลดลง"},
+      {level:"ประถมศึกษาปีที่ 3", values:[2,2,3,5], trend:"เพิ่มขึ้น"},
+      {level:"ประถมศึกษาปีที่ 4", values:[3,1,2,3], trend:"เพิ่มขึ้น"},
+      {level:"ประถมศึกษาปีที่ 5", values:[2,3,1,2], trend:"เพิ่มขึ้น"},
+      {level:"ประถมศึกษาปีที่ 6", values:[4,2,3,2], trend:"ลดลง"}
+    ],
+    totals:[21,21,24,34], totalTrend:"เพิ่มขึ้น"
+  },
+
+  /* 2. พัฒนาการเด็กปฐมวัย 4 ด้าน (ร้อยละของเด็กที่มีพัฒนาการระดับ 3 = ดี) */
+  early:{ real:true, schoolYear:"2568",
+    aspects:["ด้านร่างกาย","ด้านอารมณ์-จิตใจ","ด้านสังคม","ด้านสติปัญญา"],
+    series:[
+      {name:"อนุบาล 2", n:10, color:"#2E6DBE", values:[100.00, 100.00, 100.00, 100.00]},
+      {name:"อนุบาล 3", n:7,  color:"#0E9494", values:[100.00, 100.00, 100.00, 100.00]}
+    ],
+    note:"ผลการประเมินพัฒนาการตามหลักสูตรการศึกษาปฐมวัย พุทธศักราช 2560 (ระดับคุณภาพ : ดี) — อนุบาล 2 ประเมิน 10 คน อนุบาล 3 ประเมิน 7 คน อยู่ในระดับดีทุกด้านครบ 100%"
+  },
+
+  /* 3. ผลสัมฤทธิ์ทางการเรียน 8 กลุ่มสาระ (ป.1–ป.6) */
+  /* 3. ผลสัมฤทธิ์ทางการเรียน 9 กลุ่มสาระ แยกรายชั้น ป.1–ป.6 — ข้อมูลจริง ปีการศึกษา 2568 */
+  achievement:{ real:true,
+    grades:["ป.1","ป.2","ป.3","ป.4","ป.5","ป.6"],
+    subjects:[
+      {name:"ภาษาไทย",                         exam:[4,1,5,3,2,2], pass:[4,1,5,3,2,2]},
+      {name:"คณิตศาสตร์",                       exam:[4,1,5,3,2,2], pass:[3,1,5,3,2,2]},
+      {name:"วิทยาศาสตร์และเทคโนโลยี",           exam:[4,1,5,3,2,2], pass:[3,1,5,3,2,2]},
+      {name:"สังคมศึกษา ศาสนาและวัฒนธรรม",       exam:[4,1,5,3,2,2], pass:[4,1,5,3,2,2]},
+      {name:"ประวัติศาสตร์",                     exam:[4,1,5,3,2,2], pass:[4,1,5,3,2,2]},
+      {name:"สุขศึกษาและพลศึกษา",                exam:[4,1,5,3,2,2], pass:[4,1,5,3,2,2]},
+      {name:"ศิลปะ",                             exam:[4,1,5,3,2,2], pass:[4,1,5,3,2,2]},
+      {name:"การงานอาชีพ",                       exam:[4,1,5,3,2,2], pass:[4,1,5,3,2,2]},
+      {name:"ภาษาอังกฤษ",                        exam:[4,1,5,3,2,2], pass:[2,1,5,0,1,2]}
+    ]
+  },
+
+  /* 4. RT ป.1 — ข้อมูลจริง ปีการศึกษา 2568 */
+  rt:{ real:true, n:4,
+    items:[
+      {name:"การอ่านออกเสียง", school:97.00, area:85.81, nation:80.26},
+      {name:"การอ่านรู้เรื่อง",  school:81.00, area:84.05, nation:76.76},
+      {name:"รวม 2 สมรรถนะ",   school:89.00, area:84.93, nation:78.57}
+    ],
+    focus:"ประเด็นที่ต้องพัฒนา : สมรรถนะการอ่านรู้เรื่อง ซึ่งมีค่าเฉลี่ยต่ำกว่าระดับเขตพื้นที่การศึกษา"
+  },
+
+  /* 5. NT ป.3 — ข้อมูลจริง ปีการศึกษา 2568 */
+  nt:{ real:true, n:5,
+    items:[
+      {name:"ความสามารถด้านคณิตศาสตร์", school:60.20, area:53.25, nation:60.20},
+      {name:"ความสามารถด้านภาษาไทย",   school:76.60, area:65.73, nation:57.71},
+      {name:"รวมความสามารถทั้ง 2 ด้าน", school:68.40, area:59.49, nation:52.30}
+    ],
+    focus:"ค่าเฉลี่ยรวมสูงกว่าระดับเขตพื้นที่และระดับประเทศทุกด้าน ควรรักษาระดับและยกระดับด้านคณิตศาสตร์ให้สูงกว่าค่าเฉลี่ยระดับประเทศ"
+  },
+
+  /* 6. O-NET ป.6 — ข้อมูลจริง ปีการศึกษา 2568 */
+  onet:{ real:true, n:2,
+    items:[
+      {name:"ภาษาไทย",    school:44.50, area:45.61, nation:47.60},
+      {name:"คณิตศาสตร์",  school:32.50, area:23.46, nation:24.90},
+      {name:"วิทยาศาสตร์", school:41.25, area:33.67, nation:35.43},
+      {name:"ภาษาอังกฤษ",  school:28.13, area:29.77, nation:33.58},
+      {name:"เฉลี่ยรวม 4 กลุ่มสาระ", school:36.60, area:33.13, nation:35.38}
+    ],
+    focus:"ประเด็นที่ต้องพัฒนา : ภาษาไทย และภาษาอังกฤษ ซึ่งมีค่าเฉลี่ยต่ำกว่าระดับประเทศ"
+  },
+
+  /* 7. การอ่าน คิดวิเคราะห์ และเขียน (จำนวนคนแยกตามระดับคุณภาพ) */
+  rtw:{ real:true, criteria:"ระเบียบว่าด้วยการวัดและประเมินผลการเรียนรู้ตามหลักสูตรสถานศึกษา พุทธศักราช 2568",
+    levels:["ดีเยี่ยม","ดี","ผ่าน","ไม่ผ่าน"],
+    colors:["#1E4C8A","#0E9494","#F5A524","#EF6B5A"],
+    rows:[
+      {level:"ป.1", special:0, v:[3,1,0,0]},
+      {level:"ป.2", special:0, v:[1,0,0,0]},
+      {level:"ป.3", special:0, v:[2,3,0,0]},
+      {level:"ป.4", special:0, v:[0,3,0,0]},
+      {level:"ป.5", special:1, v:[1,0,1,0]},
+      {level:"ป.6", special:0, v:[2,0,0,0]}
+    ]
+  },
+
+  /* 8. สมรรถนะสำคัญของผู้เรียน 5 ด้าน (ร้อยละระดับดีขึ้นไป) */
+  /* 8. สมรรถนะสำคัญของผู้เรียน 5 ด้าน แยกรายชั้น ป.1–ป.6 — ข้อมูลจริง ปีการศึกษา 2568 */
+  comp:{ real:true, criteria:"ระเบียบว่าด้วยการวัดและประเมินผลการเรียนรู้ตามหลักสูตรสถานศึกษา พุทธศักราช 2568",
+    grades:["ป.1","ป.2","ป.3","ป.4","ป.5","ป.6"],
+    gradeTotals:[4,1,5,3,2,2],
+    specialByGrade:[0,0,0,0,1,0],
+    items:[
+      {name:"ความสามารถในการสื่อสาร",      color:"#1E4C8A", excellent:[3,1,4,2,2,2], good:[1,0,1,1,0,0]},
+      {name:"ความสามารถในการคิด",          color:"#0E9494", excellent:[3,1,2,0,1,2], good:[1,0,3,3,1,0]},
+      {name:"ความสามารถในการแก้ปัญหา",     color:"#7A5AF8", excellent:[3,0,1,0,1,1], good:[1,1,4,3,1,1]},
+      {name:"ความสามารถในการใช้ทักษะชีวิต", color:"#2FA84F", excellent:[4,1,2,0,1,2], good:[0,0,3,3,1,0]},
+      {name:"ความสามารถในการใช้เทคโนโลยี",  color:"#F5A524", excellent:[4,1,5,3,2,2], good:[0,0,0,0,0,0]}
+    ]
+  },
+
+  /* 9. คุณลักษณะอันพึงประสงค์ 8 ประการ (ร้อยละระดับดีขึ้นไป) */
+  /* 9. คุณลักษณะอันพึงประสงค์ (ภาพรวม) แยกรายชั้น ป.1–ป.6 — ข้อมูลจริง ปีการศึกษา 2568 */
+  desire:{ real:true,
+    levels:["ดีเยี่ยม","ดี","ผ่าน","ไม่ผ่าน"],
+    colors:["#1E4C8A","#0E9494","#F5A524","#EF6B5A"],
+    rows:[
+      {level:"ป.1", v:[4,0,0,0]},
+      {level:"ป.2", v:[1,0,0,0]},
+      {level:"ป.3", v:[4,1,0,0]},
+      {level:"ป.4", v:[3,0,0,0]},
+      {level:"ป.5", v:[2,0,0,0]},
+      {level:"ป.6", v:[2,0,0,0]}
+    ]
+  },
+
+  /* 10. กิจกรรมพัฒนาผู้เรียน */
+  /* 10. กิจกรรมพัฒนาผู้เรียน (ภาพรวม) แยกรายชั้น ป.1–ป.6 — ข้อมูลจริง ปีการศึกษา 2568 */
+  activity:{ real:true,
+    rows:[
+      {level:"ป.1", total:4, pass:4},
+      {level:"ป.2", total:1, pass:1},
+      {level:"ป.3", total:5, pass:5},
+      {level:"ป.4", total:3, pass:3},
+      {level:"ป.5", total:2, pass:2},
+      {level:"ป.6", total:2, pass:2}
+    ]
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   ส่วนที่ 2 : เมนู / เส้นทางหน้า
+   ═══════════════════════════════════════════════════════════════ */
+const ROUTES = [
+  {id:"overview", no:"◎",  short:"ภาพรวมทั้งหมด",        title:"ภาพรวมผลการพัฒนาคุณภาพนักเรียน"},
+  {id:"students", no:"01", short:"ข้อมูลนักเรียน",        title:"ข้อมูลนักเรียน ปีการศึกษา 2569 ณ วันที่ 10 มิถุนายน 2569"},
+  {id:"early",    no:"02", short:"พัฒนาการปฐมวัย",       title:"ผลการพัฒนาการทั้ง 4 ด้าน ของเด็กปฐมวัย"},
+  {id:"achieve",  no:"03", short:"ผลสัมฤทธิ์ทางการเรียน",  title:"ผลสัมฤทธิ์ทางการเรียน ปีการศึกษา 2568"},
+  {id:"rt",       no:"04", short:"RT ชั้น ป.1",           title:"ผลการประเมินความสามารถด้านการอ่าน (RT) ชั้นประถมศึกษาปีที่ 1"},
+  {id:"nt",       no:"05", short:"NT ชั้น ป.3",           title:"ผลการทดสอบความสามารถพื้นฐานระดับชาติ (NT) ชั้นประถมศึกษาปีที่ 3"},
+  {id:"onet",     no:"06", short:"O-NET ชั้น ป.6",        title:"ผลการทดสอบทางการศึกษาระดับชาติขั้นพื้นฐาน (O-NET) ชั้นประถมศึกษาปีที่ 6"},
+  {id:"rtw",      no:"07", short:"อ่าน คิดวิเคราะห์ เขียน", title:"ผลการประเมินความสามารถด้านการอ่าน คิดวิเคราะห์ และเขียน"},
+  {id:"comp",     no:"08", short:"สมรรถนะสำคัญ 5 ด้าน",   title:"ผลการประเมินสมรรถนะสำคัญของผู้เรียน 5 ด้าน"},
+  {id:"desire",   no:"09", short:"คุณลักษณะอันพึงประสงค์", title:"ผลการประเมินคุณลักษณะอันพึงประสงค์"},
+  {id:"activity", no:"10", short:"กิจกรรมพัฒนาผู้เรียน",   title:"ผลการประเมินกิจกรรมพัฒนาผู้เรียน"}
+];
+
+/* ═══════════════════════════════════════════════════════════════
+   ส่วนที่ 3 : ฟังก์ชันช่วย
+   ═══════════════════════════════════════════════════════════════ */
+const $ = s => document.querySelector(s);
+const f2 = n => (n===null||n===undefined) ? "–" : Number(n).toFixed(2);
+const f0 = n => (n===null||n===undefined) ? "–" : Number(n).toFixed(0);
+let charts = [];
+function clearCharts(){ charts.forEach(c=>c.destroy()); charts = []; }
+
+function notice(isReal, extra, year){
+  if(isReal) return `<div class="notice" style="background:#EDF8F1;border-color:#BFE8CB;color:#1B6B33">
+    <b>ข้อมูลจริง</b><span>ตัวเลขในหน้านี้เป็นผลการทดสอบจริงของโรงเรียนบ้านโคกม่วย ปีการศึกษา ${year||"2568"}${extra?" · "+extra:""}</span></div>`;
+  return `<div class="notice"><b>ข้อมูลตัวอย่าง</b>
+    <span>ตัวเลขในหน้านี้เป็นชุดตัวอย่างสำหรับทดสอบรูปแบบการนำเสนอเท่านั้น ยังมิใช่ข้อมูลจริงของโรงเรียน โปรดส่งข้อมูลจริงเพื่อปรับปรุงในลำดับถัดไป</span></div>`;
+}
+
+function head(r, desc, year){
+  return `<div class="page-head">
+    <div class="kicker"><b>${r.no==="◎"?"ภาพรวม":"หมวดที่ "+r.no}</b> ปีการศึกษา ${year||"2568"} · โรงเรียนบ้านโคกม่วย</div>
+    <h2>${r.title}</h2>${desc?`<p>${desc}</p>`:""}</div>`;
+}
+
+/* แถบเทียบระดับ — องค์ประกอบเอกลักษณ์ของ Dashboard นี้ */
+function cmpBar(it, max){
+  const M = max || 100;
+  const pct = v => Math.max(0, Math.min(100, (v/M)*100));
+  const base = (it.area!==null && it.area!==undefined) ? it.area : it.nation;
+  const baseName = (it.area!==null && it.area!==undefined) ? "เขตพื้นที่" : "ประเทศ";
+  const d = it.school - base;
+  const ticks = [];
+  if(it.area!==null && it.area!==undefined)
+    ticks.push(`<div class="tick" style="left:${pct(it.area)}%"><span>เขต ${f2(it.area)}</span></div>`);
+  if(it.nation!==null && it.nation!==undefined)
+    ticks.push(`<div class="tick nat" style="left:${pct(it.nation)}%"><span>ประเทศ ${f2(it.nation)}</span></div>`);
+  return `<div class="cmp">
+    <div class="cmp-top">
+      <span class="name">${it.name}</span>
+      <span class="school num">${f2(it.school)}</span>
+      <span class="delta ${d>=0?"up":"down"} num">${d>=0?"▲ สูงกว่า":"▼ ต่ำกว่า"}${baseName} ${Math.abs(d).toFixed(2)}</span>
+    </div>
+    <div class="track">
+      <div class="rail"><div class="fill" style="width:${pct(it.school)}%"></div></div>
+      ${ticks.join("")}
+      <div class="dot" style="left:${pct(it.school)}%"></div>
+    </div>
+  </div>`;
+}
+
+function barRow(name, v, color, unit){
+  return `<div class="bar-row">
+    <div>${name}</div>
+    <div class="bar-track"><div class="bar-fill" style="width:${Math.min(100,v)}%;background:${color}"></div></div>
+    <div class="bar-val num">${f2(v)}${unit||""}</div>
+  </div>`;
+}
+
+function stat(lab, val, unit, foot, color){
+  return `<div class="card stat" style="--c:${color}">
+    <span class="lab">${lab}</span>
+    <div class="val num">${val}${unit?`<small>${unit}</small>`:""}</div>
+    ${foot?`<div class="foot">${foot}</div>`:""}</div>`;
+}
+
+const CMP_LEGEND = `<div class="legend">
+  <span><i style="background:#1E4C8A"></i>โรงเรียนบ้านโคกม่วย</span>
+  <span><i style="background:#65748F"></i>ค่าเฉลี่ยระดับเขตพื้นที่</span>
+  <span><i style="background:#EF6B5A"></i>ค่าเฉลี่ยระดับประเทศ</span></div>`;
+
+/* ═══════════════════════════════════════════════════════════════
+   ส่วนที่ 4 : หน้าแต่ละหมวด
+   ═══════════════════════════════════════════════════════════════ */
+const PAGES = {};
+
+/* ── ภาพรวม ── */
+PAGES.overview = r => {
+  const s = DATA.students, tot = s.rows.reduce((a,b)=>a+b.m+b.f,0);
+  const cards = ROUTES.filter(x=>x.id!=="overview").map((x,i)=>{
+    const colors=["#1E4C8A","#0E9494","#7A5AF8","#F5A524","#EF6B5A","#2FA84F","#2E6DBE","#0E9494","#7A5AF8","#F5A524"];
+    return `<button type="button" class="menu-card" data-go="${x.id}" style="--c:${colors[i]}">
+      <span class="n">${x.no}</span><b>${x.short}</b><span>${x.title}</span></button>`;
+  }).join("");
+  return `
+  <div class="hero">
+    <div class="eyebrow">รายงานผลการพัฒนาคุณภาพผู้เรียน</div>
+    <h2>ผลการพัฒนาคุณภาพนักเรียน ปีการศึกษา 2568</h2>
+    <p>โรงเรียนบ้านโคกม่วย สำนักงานเขตพื้นที่การศึกษาประถมศึกษาหนองบัวลำภู เขต 1 — นำเสนอผลการประเมินคุณภาพผู้เรียนครบทั้ง 10 หมวด ตั้งแต่ข้อมูลพื้นฐานนักเรียนจนถึงผลการประเมินกิจกรรมพัฒนาผู้เรียน</p>
+    <div class="hero-stats">
+      <div><span>นักเรียนทั้งหมด</span><b class="num">${tot} คน</b></div>
+      <div><span>RT รวม 2 สมรรถนะ</span><b class="num">${f2(DATA.rt.items[2].school)}</b></div>
+      <div><span>NT รวม 2 ด้าน</span><b class="num">${f2(DATA.nt.items[2].school)}</b></div>
+      <div><span>O-NET เฉลี่ยรวม</span><b class="num">${f2(DATA.onet.items[4].school)}</b></div>
+    </div>
+  </div>
+
+  <div class="grid g3" style="margin-bottom:18px">
+    ${stat("RT ชั้น ป.1 · เทียบระดับประเทศ", "+"+(DATA.rt.items[2].school-DATA.rt.items[2].nation).toFixed(2), "", "โรงเรียน "+f2(DATA.rt.items[2].school)+" · ประเทศ "+f2(DATA.rt.items[2].nation), "#1E4C8A")}
+    ${stat("NT ชั้น ป.3 · เทียบระดับประเทศ", "+"+(DATA.nt.items[2].school-DATA.nt.items[2].nation).toFixed(2), "", "โรงเรียน "+f2(DATA.nt.items[2].school)+" · ประเทศ "+f2(DATA.nt.items[2].nation), "#0E9494")}
+    ${stat("O-NET ชั้น ป.6 · เทียบระดับประเทศ", "+"+(DATA.onet.items[4].school-DATA.onet.items[4].nation).toFixed(2), "", "โรงเรียน "+f2(DATA.onet.items[4].school)+" · ประเทศ "+f2(DATA.onet.items[4].nation), "#F5A524")}
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <h3>ผลการทดสอบระดับชาติเทียบกับค่าเฉลี่ยระดับประเทศ</h3>
+    <p class="sub">ข้อมูลจริง ปีการศึกษา 2568</p>
+    <div class="chart-box"><canvas id="cOverview"></canvas></div>
+  </div>
+
+  <div class="page-head"><h2 style="font-size:19px">เลือกดูรายหมวด</h2></div>
+  <div class="grid g3">${cards}</div>`;
+};
+
+/* ── 01 ข้อมูลนักเรียน ── */
+PAGES.students = r => {
+  const s = DATA.students, en = DATA.enrollment;
+  const m = s.rows.reduce((a,b)=>a+b.m,0), f = s.rows.reduce((a,b)=>a+b.f,0);
+  const pre = s.rows.filter(x=>x.level.includes("อนุบาล")).reduce((a,b)=>a+b.m+b.f,0);
+  const pri = (m+f) - pre;
+  const staffTotal = s.staff.roles.reduce((a,b)=>a+b.n,0);
+  const rows = s.rows.map(x=>`<tr><td>${x.level}</td><td class="num">${x.m}</td><td class="num">${x.f}</td><td class="num"><b>${x.m+x.f}</b></td></tr>`).join("");
+  const roleRows = s.staff.roles.map(x=>`<tr><td>${x.name}</td><td class="num">${x.n}</td></tr>`).join("");
+  const eduRows = s.staff.education.map(x=>`<tr><td>${x.name}</td><td class="num">${x.n}</td></tr>`).join("");
+  return head(r, `ข้อมูลจำนวนนักเรียนจำแนกตามระดับชั้นและเพศ ปีการศึกษา 2569 ณ วันที่ ${s.asOf} ตามระบบจัดเก็บข้อมูลนักเรียนรายบุคคล (DMC) — เป็นคนละรุ่นนักเรียนกับผลการทดสอบ RT/NT/O-NET ในหมวดถัดไปซึ่งเป็นผลของปีการศึกษา 2568`, "2569")
+  + notice(s.real, null, "2569")
+  + `<div class="grid g4" style="margin-bottom:18px">
+      ${stat("นักเรียนทั้งหมด", m+f, "คน", "ณ "+s.asOf, "#1E4C8A")}
+      ${stat("ระดับปฐมวัย", pre, "คน", "อนุบาล 2 – อนุบาล 3", "#0E9494")}
+      ${stat("ระดับประถมศึกษา", pri, "คน", "ประถมศึกษาปีที่ 1 – 6", "#7A5AF8")}
+      ${stat("ผู้บริหารและบุคลากร", staffTotal, "คน", s.staff.roles.map(x=>x.name+" "+x.n).join(" · "), "#F5A524")}
+    </div>
+    <div class="grid g2" style="margin-bottom:18px">
+      <div class="card"><h3>จำนวนนักเรียนรายชั้น จำแนกตามเพศ</h3><p class="sub">หน่วย : คน</p>
+        <div class="chart-box"><canvas id="cStuBar"></canvas></div></div>
+      <div class="card"><h3>สัดส่วนนักเรียนตามระดับการศึกษา</h3><p class="sub">ปฐมวัย เทียบ ประถมศึกษา</p>
+        <div class="chart-box"><canvas id="cStuPie"></canvas></div></div>
+    </div>
+    <div class="card" style="margin-bottom:18px"><h3>ตารางจำนวนนักเรียนรายชั้น</h3><p class="sub">ข้อมูล ณ ${s.asOf}</p>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>ระดับชั้น</th><th>ชาย</th><th>หญิง</th><th>รวม</th></tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot><tr><td>รวมทั้งสิ้น</td><td class="num">${m}</td><td class="num">${f}</td><td class="num">${m+f}</td></tr></tfoot>
+      </table></div></div>
+    <div class="grid g2">
+      <div class="card"><h3>บุคลากรจำแนกตามตำแหน่ง</h3><p class="sub">ผู้บริหาร ครู และบุคลากรสนับสนุน</p>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>ตำแหน่ง</th><th>จำนวน (คน)</th></tr></thead>
+          <tbody>${roleRows}</tbody>
+          <tfoot><tr><td>รวมทั้งสิ้น</td><td class="num">${staffTotal}</td></tr></tfoot>
+        </table></div></div>
+      <div class="card"><h3>วุฒิการศึกษาสูงสุดของบุคลากร</h3><p class="sub">จำแนกตามระดับวุฒิการศึกษา</p>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>วุฒิการศึกษา</th><th>จำนวน (คน)</th></tr></thead>
+          <tbody>${eduRows}</tbody>
+          <tfoot><tr><td>รวมทั้งสิ้น</td><td class="num">${s.staff.education.reduce((a,b)=>a+b.n,0)}</td></tr></tfoot>
+        </table></div></div>
+    </div>
+    <div class="card" style="margin-top:16px"><h3>แนวโน้มจำนวนนักเรียนย้อนหลัง ปีการศึกษา 2565–2568</h3>
+      <p class="sub">ข้อมูลจริง ณ วันที่ 10 มิถุนายนของแต่ละปีการศึกษา (เป็นคนละรุ่นกับข้อมูลปีการศึกษา 2569 ด้านบน)</p>
+      <div class="chart-box tall"><canvas id="cEnroll"></canvas></div>
+      <div class="tbl-wrap" style="margin-top:16px"><table>
+        <thead><tr><th>ระดับชั้น</th>${en.years.map(y=>`<th>${y}</th>`).join("")}<th>แนวโน้ม</th></tr></thead>
+        <tbody>${en.rows.map(x=>`<tr><td>${x.level}</td>${x.values.map(v=>`<td class="num">${v===null?"–":v}</td>`).join("")}
+          <td class="${x.trend==="เพิ่มขึ้น"?"pass":"fail"}">${x.trend}</td></tr>`).join("")}</tbody>
+        <tfoot><tr><td>รวมทั้งสิ้น</td>${en.totals.map(v=>`<td class="num">${v}</td>`).join("")}
+          <td class="pass">${en.totalTrend}</td></tr></tfoot>
+      </table></div></div>`;
+};
+
+/* ── 02 ปฐมวัย ── */
+PAGES.early = r => {
+  const e = DATA.early;
+  const rows = e.aspects.map((a,i)=>`<tr><td>${a}</td>${e.series.map(s=>`<td class="num">${f2(s.values[i])}</td>`).join("")}
+    <td class="num"><b>${f2(e.series.reduce((x,s)=>x+s.values[i],0)/e.series.length)}</b></td></tr>`).join("");
+  const avgAll = e.series.reduce((x,s)=>x+s.values.reduce((a,b)=>a+b,0)/s.values.length,0)/e.series.length;
+  return head(r, "ผลการประเมินพัฒนาการเด็กปฐมวัยทั้ง 4 ด้าน แสดงเป็นร้อยละของเด็กที่มีผลการประเมินอยู่ในระดับ 3 (ดี) ขึ้นไป")
+  + notice(e.real)
+  + `<div class="grid g4" style="margin-bottom:18px">
+      ${e.aspects.map((a,i)=>stat(a, f2(e.series.reduce((x,s)=>x+s.values[i],0)/e.series.length), "%", "ระดับ 3 (ดี) ขึ้นไป", ["#2FA84F","#F5A524","#7A5AF8","#0E9494"][i])).join("")}
+    </div>
+    <div class="grid g2" style="margin-bottom:18px">
+      <div class="card"><h3>พัฒนาการ 4 ด้าน จำแนกตามระดับชั้น</h3><p class="sub">ร้อยละของเด็กที่มีพัฒนาการระดับดี</p>
+        <div class="chart-box"><canvas id="cEarlyBar"></canvas></div></div>
+      <div class="card"><h3>ภาพรวมพัฒนาการทั้ง 4 ด้าน</h3><p class="sub">ค่าเฉลี่ยรวมทุกระดับชั้น ${f2(avgAll)}%</p>
+        <div class="chart-box"><canvas id="cEarlyRadar"></canvas></div></div>
+    </div>
+    <div class="card"><h3>ตารางผลการประเมินพัฒนาการ</h3><p class="sub">${e.note}</p>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>ด้านพัฒนาการ</th>${e.series.map(s=>`<th>${s.name}</th>`).join("")}<th>เฉลี่ย</th></tr></thead>
+        <tbody>${rows}</tbody></table></div></div>`;
+};
+
+/* ── 03 ผลสัมฤทธิ์ ── */
+PAGES.achieve = r => {
+  const a = DATA.achievement;
+  const sub = a.subjects.map(s=>{
+    const totalExam = s.exam.reduce((x,y)=>x+y,0), totalPass = s.pass.reduce((x,y)=>x+y,0);
+    return Object.assign({}, s, {pct: (totalPass/totalExam)*100, totalExam, totalPass});
+  });
+  const overallExam = sub.reduce((x,s)=>x+s.totalExam,0)/sub.length;
+  const overallPass = sub.reduce((x,s)=>x+s.totalPass,0)/sub.length;
+  const overallPct = (overallPass/overallExam)*100;
+  const hi = sub.reduce((x,s)=>s.pct>x.pct?s:x), lo = sub.reduce((x,s)=>s.pct<x.pct?s:x);
+  const rows = sub.map(s=>`<tr><td>${s.name}</td><td class="num">${s.totalExam}</td><td class="num">${s.totalPass}</td>
+    <td class="num">${f2(s.pct)}</td><td class="${s.pct>=overallPct?"pass":"fail"}">${s.pct>=overallPct?"สูงกว่าค่าเฉลี่ยโรงเรียน":"ต่ำกว่าค่าเฉลี่ยโรงเรียน"}</td></tr>`).join("");
+  const gradeRows = sub.map(s=>`<tr><td>${s.name}</td>${a.grades.map((g,i)=>{
+    const p = (s.pass[i]/s.exam[i])*100;
+    return `<td class="num ${p<100?"fail":""}" title="${s.pass[i]}/${s.exam[i]} คน">${f0(p)}%</td>`;
+  }).join("")}</tr>`).join("");
+  return head(r, "ผลสัมฤทธิ์ทางการเรียน 9 กลุ่มสาระการเรียนรู้ ระดับชั้นประถมศึกษาปีที่ 1 – 6 แสดงจำนวนและร้อยละของนักเรียนที่มีผลการเรียนแต่ละรายวิชาระดับ 3 ขึ้นไป")
+  + notice(a.real)
+  + `<div class="grid g3" style="margin-bottom:18px">
+      ${stat("ค่าเฉลี่ยรวมทุกกลุ่มสาระ", f2(overallPct), "%", "นักเรียนระดับ 3 ขึ้นไป · 9 กลุ่มสาระการเรียนรู้", "#1E4C8A")}
+      ${stat("กลุ่มสาระที่โดดเด่นที่สุด", f2(hi.pct), "%", hi.name, "#2FA84F")}
+      ${stat("กลุ่มสาระที่ควรพัฒนา", f2(lo.pct), "%", lo.name, "#EF6B5A")}
+    </div>
+    <div class="card" style="margin-bottom:18px"><h3>ร้อยละนักเรียนที่ได้ระดับ 3 ขึ้นไป รายกลุ่มสาระการเรียนรู้</h3>
+      <p class="sub">รวมทุกระดับชั้น ป.1–ป.6</p>
+      <div class="chart-box tall"><canvas id="cAch"></canvas></div></div>
+    <div class="card" style="margin-bottom:18px"><h3>ตารางสรุปรายกลุ่มสาระการเรียนรู้</h3><p class="sub">เปรียบเทียบกับค่าเฉลี่ยรวมของโรงเรียน (${f2(overallPct)}%)</p>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>กลุ่มสาระการเรียนรู้</th><th>เข้าสอบ (คน)</th><th>ได้ระดับ 3 ขึ้นไป (คน)</th><th>ร้อยละ</th><th>การแปลผล</th></tr></thead>
+        <tbody>${rows}</tbody></table></div></div>
+    <div class="card"><h3>ตารางแยกรายชั้นเรียน</h3><p class="sub">ร้อยละนักเรียนที่ได้ระดับ 3 ขึ้นไป แยกตามชั้น ป.1–ป.6 (ชี้ที่ตัวเลขเพื่อดูจำนวนคน)</p>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>กลุ่มสาระการเรียนรู้</th>${a.grades.map(g=>`<th>${g}</th>`).join("")}</tr></thead>
+        <tbody>${gradeRows}</tbody></table></div></div>`;
+};
+
+/* ── หน้าแบบทดสอบระดับชาติ (RT / NT / O-NET) ── */
+function nationalPage(r, d, cid, subtitle){
+  const rows = d.items.map(it=>{
+    const base = it.area ?? it.nation, diff = it.school - base;
+    return `<tr><td>${it.name}</td><td class="num">${f2(it.school)}</td><td class="num">${f2(it.area)}</td>
+      <td class="num">${f2(it.nation)}</td><td class="${diff>=0?"pass":"fail"} num">${diff>=0?"+":""}${diff.toFixed(2)}</td></tr>`;
+  }).join("");
+  const last = d.items[d.items.length-1];
+  return head(r, subtitle)
+  + notice(d.real, `นักเรียนเข้าสอบ ${d.n} คน`)
+  + `<div class="grid g3" style="margin-bottom:18px">
+      ${stat("ค่าเฉลี่ยโรงเรียน", f2(last.school), "", last.name, "#1E4C8A")}
+      ${stat("ค่าเฉลี่ยระดับเขตพื้นที่", f2(last.area), "", last.area===null?"ยังไม่ได้รับข้อมูล":"สพป.หนองบัวลำภู เขต 1", "#65748F")}
+      ${stat("ค่าเฉลี่ยระดับประเทศ", f2(last.nation), "", "สทศ. / สพฐ.", "#EF6B5A")}
+    </div>
+    <div class="card" style="margin-bottom:18px">
+      <h3>แถบเทียบระดับ : โรงเรียน · เขตพื้นที่ · ประเทศ</h3>
+      <p class="sub">จุดวงกลมคือค่าเฉลี่ยของโรงเรียน ขีดคือค่าเฉลี่ยระดับเขตพื้นที่และระดับประเทศ</p>
+      ${d.items.map(it=>cmpBar(it)).join("")}
+      ${CMP_LEGEND}
+    </div>
+    <div class="grid g2">
+      <div class="card"><h3>แผนภูมิเปรียบเทียบค่าเฉลี่ย</h3><p class="sub">หน่วย : คะแนนเฉลี่ยร้อยละ</p>
+        <div class="chart-box"><canvas id="${cid}"></canvas></div></div>
+      <div class="card"><h3>ตารางผลการประเมิน</h3><p class="sub">ผลต่างคำนวณจากโรงเรียนเทียบระดับเขตพื้นที่ (หากไม่มีข้อมูลเขตจะเทียบระดับประเทศ)</p>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>รายการ</th><th>โรงเรียน</th><th>เขตพื้นที่</th><th>ประเทศ</th><th>ผลต่าง</th></tr></thead>
+          <tbody>${rows}</tbody></table></div>
+        <div class="notice" style="margin:14px 0 0;background:#F1F5FC;border-color:#D3E0F3;color:#26456F">
+          <b>ข้อค้นพบ</b><span>${d.focus}</span></div>
+      </div>
+    </div>`;
+}
+PAGES.rt   = r => nationalPage(r, DATA.rt, "cRT", "ผลการประเมินความสามารถด้านการอ่านของผู้เรียน (Reading Test : RT) ชั้นประถมศึกษาปีที่ 1 ปีการศึกษา 2568 เปรียบเทียบระดับโรงเรียน เขตพื้นที่การศึกษา และระดับประเทศ");
+PAGES.nt   = r => nationalPage(r, DATA.nt, "cNT", "ผลการทดสอบความสามารถพื้นฐานของผู้เรียนระดับชาติ (National Test : NT) ชั้นประถมศึกษาปีที่ 3 ปีการศึกษา 2568 เปรียบเทียบระดับโรงเรียน เขตพื้นที่การศึกษา และระดับประเทศ");
+PAGES.onet = r => nationalPage(r, DATA.onet, "cONET", "ผลการทดสอบทางการศึกษาระดับชาติขั้นพื้นฐาน (O-NET) ชั้นประถมศึกษาปีที่ 6 ปีการศึกษา 2568 เปรียบเทียบระดับโรงเรียนกับค่าเฉลี่ยระดับประเทศ");
+
+/* ── 07 อ่าน คิดวิเคราะห์ และเขียน ── */
+PAGES.rtw = r => {
+  const d = DATA.rtw;
+  const sum = i => d.rows.reduce((a,b)=>a+b.v[i],0);
+  const tot = d.rows.reduce((a,b)=>a+b.v.reduce((x,y)=>x+y,0),0);
+  const good = sum(0)+sum(1);
+  const specialTotal = d.rows.reduce((a,b)=>a+(b.special||0),0);
+  const rows = d.rows.map(x=>{
+    const t = x.v.reduce((a,b)=>a+b,0);
+    return `<tr><td>${x.level}</td>${x.v.map(v=>`<td class="num">${v}</td>`).join("")}<td class="num"><b>${t}</b></td>
+      <td class="num">${f2(((x.v[0]+x.v[1])/t)*100)}</td></tr>`;
+  }).join("");
+  return head(r, `ผลการประเมินความสามารถในการอ่าน คิดวิเคราะห์ และเขียน ระดับชั้นประถมศึกษาปีที่ 1 – 6 ตาม${d.criteria} จำแนกตามระดับคุณภาพและระดับชั้น`)
+  + notice(d.real, `นักเรียนทั้งหมด ${tot} คน`)
+  + `<div class="grid g4" style="margin-bottom:18px">
+      ${d.levels.map((l,i)=>stat("ระดับ"+l, sum(i), "คน", f2((sum(i)/tot)*100)+"% ของนักเรียนทั้งหมด", d.colors[i])).join("")}
+    </div>
+    <div class="grid g2" style="margin-bottom:18px">
+      <div class="card"><h3>ระดับคุณภาพรายชั้นเรียน</h3><p class="sub">หน่วย : คน (แผนภูมิแท่งซ้อน)</p>
+        <div class="chart-box"><canvas id="cRTW"></canvas></div></div>
+      <div class="card"><h3>สัดส่วนระดับคุณภาพภาพรวม</h3><p class="sub">นักเรียนระดับดีขึ้นไป ${f2((good/tot)*100)}%</p>
+        <div class="chart-box"><canvas id="cRTWPie"></canvas></div></div>
+    </div>
+    <div class="card"><h3>ตารางผลการประเมิน</h3><p class="sub">หน่วย : คน · คอลัมน์สุดท้ายคือร้อยละของนักเรียนที่มีผลระดับดีขึ้นไป</p>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>ระดับชั้น</th>${d.levels.map(l=>`<th>${l}</th>`).join("")}<th>รวม</th><th>ร้อยละระดับดีขึ้นไป</th></tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot><tr><td>รวมทั้งสิ้น</td>${d.levels.map((l,i)=>`<td class="num">${sum(i)}</td>`).join("")}
+          <td class="num">${tot}</td><td class="num">${f2((good/tot)*100)}</td></tr></tfoot>
+      </table></div>
+      ${specialTotal>0?`<p class="sub" style="margin:12px 0 0">หมายเหตุ : ในจำนวนนักเรียนทั้งหมดข้างต้น มีนักเรียนที่มีความต้องการจำเป็นพิเศษ (เรียนร่วม) รวม ${specialTotal} คน ซึ่งได้รับการประเมินตามเกณฑ์เดียวกัน</p>`:""}
+    </div>`;
+};
+
+/* ── 08 สมรรถนะสำคัญ ── */
+PAGES.comp = r => {
+  const d = DATA.comp;
+  const tot = d.gradeTotals.reduce((a,b)=>a+b,0);
+  const items = d.items.map(it=>{
+    const totalExcellent = it.excellent.reduce((a,b)=>a+b,0);
+    const totalGood = it.good.reduce((a,b)=>a+b,0);
+    return Object.assign({}, it, {
+      pctExcellent: (totalExcellent/tot)*100,
+      pctGoodUp: ((totalExcellent+totalGood)/tot)*100,
+      totalExcellent, totalGood
+    });
+  });
+  const avg = items.reduce((a,b)=>a+b.pctExcellent,0)/items.length;
+  const hi = items.reduce((a,b)=>b.pctExcellent>a.pctExcellent?b:a);
+  const lo = items.reduce((a,b)=>b.pctExcellent<a.pctExcellent?b:a);
+  const allGoodUp100 = items.every(it=>it.pctGoodUp>=99.99);
+  const specialTotal = d.specialByGrade.reduce((a,b)=>a+b,0);
+  const gradeMatrix = d.grades.map((g,gi)=>`<tr><td>${g}</td>${items.map(it=>{
+    const p = ((it.excellent[gi]+it.good[gi])/d.gradeTotals[gi])*100;
+    return `<td class="num ${p<100?"fail":""}" title="ดีมาก ${it.excellent[gi]} · ดี ${it.good[gi]} จาก ${d.gradeTotals[gi]} คน">${f0(p)}%</td>`;
+  }).join("")}</tr>`).join("");
+  return head(r, `ผลการประเมินสมรรถนะสำคัญของผู้เรียน 5 ด้าน ระดับชั้นประถมศึกษาปีที่ 1 – 6 ตาม${d.criteria} แสดงระดับคุณภาพดีมาก / ดี / พอใช้ / ปรับปรุง`)
+  + notice(d.real, `นักเรียนทั้งหมด ${tot} คน`)
+  + `<div class="grid g3" style="margin-bottom:18px">
+      ${stat("ค่าเฉลี่ยระดับดีมาก ทั้ง 5 ด้าน", f2(avg), "%", "เฉลี่ยรวม 5 สมรรถนะ", "#1E4C8A")}
+      ${stat("สมรรถนะที่โดดเด่นที่สุด", f2(hi.pctExcellent), "%", hi.name+" · ระดับดีมาก", "#2FA84F")}
+      ${stat("สมรรถนะที่ควรพัฒนา", f2(lo.pctExcellent), "%", lo.name+" · ระดับดีมาก", "#EF6B5A")}
+    </div>
+    ${allGoodUp100?`<div class="notice" style="background:#EDF8F1;border-color:#BFE8CB;color:#1B6B33">
+      <b>ข้อค้นพบ</b><span>นักเรียนทั้งโรงเรียนมีผลการประเมินระดับดีขึ้นไปครบร้อยละ 100 ในทุกสมรรถนะ ไม่มีนักเรียนอยู่ในระดับพอใช้หรือปรับปรุง ความแตกต่างระหว่างสมรรถนะอยู่ที่สัดส่วนระดับดีมากเทียบกับระดับดี</span></div>`:""}
+    <div class="grid g2" style="margin-bottom:18px">
+      <div class="card"><h3>ผังใยแมงมุมสมรรถนะสำคัญ 5 ด้าน</h3><p class="sub">ร้อยละนักเรียนระดับดีมาก</p>
+        <div class="chart-box"><canvas id="cComp"></canvas></div></div>
+      <div class="card"><h3>ร้อยละระดับดีมากรายสมรรถนะ</h3><p class="sub">เรียงตามลำดับในหลักสูตร</p>
+        <div class="bars" style="margin-top:6px">${items.map(it=>barRow(it.name, it.pctExcellent, it.color, "%")).join("")}</div></div>
+    </div>
+    <div class="card" style="margin-bottom:18px"><h3>ตารางสรุปผลการประเมินสมรรถนะสำคัญ</h3><p class="sub">หน่วย : คน จากนักเรียนทั้งหมด ${tot} คน</p>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>สมรรถนะสำคัญ</th><th>ดีมาก</th><th>ดี</th><th>ร้อยละดีมาก</th><th>ร้อยละดีขึ้นไป</th></tr></thead>
+        <tbody>${items.map(it=>`<tr><td>${it.name}</td><td class="num">${it.totalExcellent}</td><td class="num">${it.totalGood}</td>
+          <td class="num">${f2(it.pctExcellent)}</td><td class="${it.pctGoodUp>=100?"pass":"num"}">${f2(it.pctGoodUp)}</td></tr>`).join("")}</tbody>
+      </table></div></div>
+    <div class="card"><h3>ตารางแยกรายชั้นเรียน</h3><p class="sub">ร้อยละนักเรียนระดับดีขึ้นไป แยกตามชั้น ป.1–ป.6 (ชี้ที่ตัวเลขเพื่อดูจำนวนคน)</p>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>ชั้น</th>${items.map(it=>`<th>${it.name.replace("ความสามารถใน","")}</th>`).join("")}</tr></thead>
+        <tbody>${gradeMatrix}</tbody></table></div>
+      ${specialTotal>0?`<p class="sub" style="margin:12px 0 0">หมายเหตุ : ในจำนวนนักเรียนทั้งหมดข้างต้น มีนักเรียนที่มีความต้องการจำเป็นพิเศษ (เรียนร่วม) รวม ${specialTotal} คน ซึ่งได้รับการประเมินตามเกณฑ์เดียวกัน</p>`:""}
+    </div>`;
+};
+
+/* ── 09 คุณลักษณะอันพึงประสงค์ ── */
+PAGES.desire = r => {
+  const d = DATA.desire;
+  const sum = i => d.rows.reduce((a,b)=>a+b.v[i],0);
+  const tot = d.rows.reduce((a,b)=>a+b.v.reduce((x,y)=>x+y,0),0);
+  const good = sum(0)+sum(1);
+  const rows = d.rows.map(x=>{
+    const t = x.v.reduce((a,b)=>a+b,0);
+    return `<tr><td>${x.level}</td>${x.v.map(v=>`<td class="num">${v}</td>`).join("")}<td class="num"><b>${t}</b></td>
+      <td class="num">${f2(((x.v[0]+x.v[1])/t)*100)}</td></tr>`;
+  }).join("");
+  return head(r, "ผลการประเมินคุณลักษณะอันพึงประสงค์ ระดับชั้นประถมศึกษาปีที่ 1 – 6 ปีการศึกษา 2568 จำแนกตามระดับคุณภาพและระดับชั้น (ภาพรวมคุณลักษณะอันพึงประสงค์ 8 ประการ)")
+  + notice(d.real, `นักเรียนทั้งหมด ${tot} คน`)
+  + `<div class="grid g4" style="margin-bottom:18px">
+      ${d.levels.map((l,i)=>stat("ระดับ"+l, sum(i), "คน", f2((sum(i)/tot)*100)+"% ของนักเรียนทั้งหมด", d.colors[i])).join("")}
+    </div>
+    <div class="grid g2" style="margin-bottom:18px">
+      <div class="card"><h3>ระดับคุณภาพรายชั้นเรียน</h3><p class="sub">หน่วย : คน (แผนภูมิแท่งซ้อน)</p>
+        <div class="chart-box"><canvas id="cDesire"></canvas></div></div>
+      <div class="card"><h3>สัดส่วนระดับคุณภาพภาพรวม</h3><p class="sub">นักเรียนระดับดีขึ้นไป ${f2((good/tot)*100)}%</p>
+        <div class="chart-box"><canvas id="cDesirePie"></canvas></div></div>
+    </div>
+    <div class="card"><h3>ตารางผลการประเมิน</h3><p class="sub">หน่วย : คน · คอลัมน์สุดท้ายคือร้อยละของนักเรียนที่มีผลระดับดีขึ้นไป</p>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>ระดับชั้น</th>${d.levels.map(l=>`<th>${l}</th>`).join("")}<th>รวม</th><th>ร้อยละระดับดีขึ้นไป</th></tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot><tr><td>รวมทั้งสิ้น</td>${d.levels.map((l,i)=>`<td class="num">${sum(i)}</td>`).join("")}
+          <td class="num">${tot}</td><td class="num">${f2((good/tot)*100)}</td></tr></tfoot>
+      </table></div></div>`;
+};
+
+/* ── 10 กิจกรรมพัฒนาผู้เรียน ── */
+PAGES.activity = r => {
+  const d = DATA.activity;
+  const pass = d.rows.reduce((a,b)=>a+b.pass,0), all = d.rows.reduce((a,b)=>a+b.total,0);
+  const rows = d.rows.map(x=>`<tr><td>${x.level}</td><td class="num">${x.total}</td><td class="num">${x.pass}</td>
+    <td class="num">${x.total-x.pass}</td><td class="num">${f2((x.pass/x.total)*100)}</td>
+    <td class="${x.pass===x.total?"pass":"fail"}">${x.pass===x.total?"ผ่านทุกคน":"มีนักเรียนไม่ผ่าน"}</td></tr>`).join("");
+  return head(r, "ผลการประเมินกิจกรรมพัฒนาผู้เรียน ระดับชั้นประถมศึกษาปีที่ 1 – 6 ปีการศึกษา 2568 (ภาพรวมกิจกรรมพัฒนาผู้เรียน)")
+  + notice(d.real, `นักเรียนทั้งหมด ${all} คน`)
+  + `<div class="grid g3" style="margin-bottom:18px">
+      ${stat("ร้อยละนักเรียนที่ผ่านกิจกรรม", f2((pass/all)*100), "%", `ผ่าน ${pass} จาก ${all} คน`, "#2FA84F")}
+      ${stat("ชั้นเรียนที่ผ่านครบทุกคน", d.rows.filter(x=>x.pass===x.total).length+" / "+d.rows.length, "ชั้น", "จากทั้งหมด "+d.rows.length+" ชั้นเรียน", "#1E4C8A")}
+      ${stat("นักเรียนที่ยังไม่ผ่าน", all-pass, "คน", "ต้องดำเนินการซ่อมเสริม", "#EF6B5A")}
+    </div>
+    <div class="grid g2" style="margin-bottom:18px">
+      <div class="card"><h3>ผลการประเมินรายชั้นเรียน</h3><p class="sub">หน่วย : คน (ผ่าน / ไม่ผ่าน)</p>
+        <div class="chart-box"><canvas id="cAct"></canvas></div></div>
+      <div class="card"><h3>สัดส่วนภาพรวม</h3><p class="sub">ผ่าน ${pass} · ไม่ผ่าน ${all-pass}</p>
+        <div class="chart-box"><canvas id="cActPie"></canvas></div></div>
+    </div>
+    <div class="card"><h3>ตารางผลการประเมินกิจกรรมพัฒนาผู้เรียน</h3><p class="sub">เกณฑ์ : นักเรียนต้องมีเวลาเข้าร่วมกิจกรรมและผ่านการประเมินตามที่สถานศึกษากำหนด</p>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>ระดับชั้น</th><th>นักเรียนทั้งหมด</th><th>ผ่าน</th><th>ไม่ผ่าน</th><th>ร้อยละผ่าน</th><th>สรุปผล</th></tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot><tr><td>รวมทั้งสิ้น</td><td class="num">${all}</td><td class="num">${pass}</td>
+          <td class="num">${all-pass}</td><td class="num">${f2((pass/all)*100)}</td><td></td></tr></tfoot>
+      </table></div></div>`;
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   ส่วนที่ 5 : แผนภูมิ
+   ═══════════════════════════════════════════════════════════════ */
+Chart.defaults.font.family = "'IBM Plex Sans Thai', sans-serif";
+Chart.defaults.font.size = 12;
+Chart.defaults.color = "#65748F";
+const AXIS = {grid:{color:"#EDF1F8"},border:{display:false}};
+const baseOpt = extra => Object.assign({
+  responsive:true, maintainAspectRatio:false,
+  plugins:{legend:{position:"bottom",labels:{boxWidth:12,boxHeight:12,usePointStyle:true,pointStyle:"circle",padding:14}}},
+  scales:{x:AXIS, y:Object.assign({beginAtZero:true},AXIS)}
+}, extra||{});
+const mk = (id,cfg) => { const el=document.getElementById(id); if(el) charts.push(new Chart(el,cfg)); };
+
+const CHARTS = {
+  overview(){
+    mk("cOverview",{type:"bar",data:{
+      labels:["RT ป.1 (รวม 2 สมรรถนะ)","NT ป.3 (รวม 2 ด้าน)","O-NET ป.6 (เฉลี่ยรวม)"],
+      datasets:[
+        {label:"โรงเรียนบ้านโคกม่วย",data:[DATA.rt.items[2].school,DATA.nt.items[2].school,DATA.onet.items[4].school],backgroundColor:"#1E4C8A",borderRadius:7},
+        {label:"ระดับเขตพื้นที่",data:[DATA.rt.items[2].area,DATA.nt.items[2].area,DATA.onet.items[4].area],backgroundColor:"#9DB4D6",borderRadius:7},
+        {label:"ระดับประเทศ",data:[DATA.rt.items[2].nation,DATA.nt.items[2].nation,DATA.onet.items[4].nation],backgroundColor:"#EF6B5A",borderRadius:7}
+      ]},options:baseOpt({scales:{x:AXIS,y:Object.assign({beginAtZero:true,max:100},AXIS)}})});
+  },
+  students(){
+    const s = DATA.students, lab = s.rows.map(x=>x.level.replace("ประถมศึกษาปีที่ ","ป.").replace("อนุบาล ","อ."));
+    mk("cStuBar",{type:"bar",data:{labels:lab,datasets:[
+      {label:"ชาย",data:s.rows.map(x=>x.m),backgroundColor:"#2E6DBE",borderRadius:6},
+      {label:"หญิง",data:s.rows.map(x=>x.f),backgroundColor:"#F5A524",borderRadius:6}
+    ]},options:baseOpt()});
+    const pre = s.rows.filter(x=>x.level.includes("อนุบาล")).reduce((a,b)=>a+b.m+b.f,0);
+    const pri = s.rows.reduce((a,b)=>a+b.m+b.f,0)-pre;
+    mk("cStuPie",{type:"doughnut",data:{labels:["ระดับปฐมวัย","ระดับประถมศึกษา"],
+      datasets:[{data:[pre,pri],backgroundColor:["#0E9494","#1E4C8A"],borderWidth:3,borderColor:"#fff"}]},
+      options:{responsive:true,maintainAspectRatio:false,cutout:"58%",
+        plugins:{legend:{position:"bottom",labels:{boxWidth:12,usePointStyle:true,pointStyle:"circle",padding:14}}}}});
+    const en = DATA.enrollment, enLab = en.rows.map(x=>x.level.replace("ประถมศึกษาปีที่ ","ป.").replace("อนุบาล ","อ."));
+    const palette = ["#9DB4D6","#2E6DBE","#0E9494","#F5A524"];
+    mk("cEnroll",{type:"line",data:{labels:enLab,
+      datasets:en.years.map((y,i)=>({label:"ปีการศึกษา "+y,data:en.rows.map(x=>x.values[i]),
+        borderColor:palette[i],backgroundColor:palette[i],tension:.35,borderWidth:2.5,
+        pointRadius:4,pointBackgroundColor:"#fff",pointBorderWidth:2,spanGaps:true}))},
+      options:baseOpt({scales:{x:AXIS,y:Object.assign({beginAtZero:true},AXIS)}})});
+  },
+  early(){
+    const e = DATA.early;
+    mk("cEarlyBar",{type:"bar",data:{labels:e.aspects,datasets:e.series.map(s=>({label:s.name,data:s.values,backgroundColor:s.color,borderRadius:6}))},
+      options:baseOpt({scales:{x:AXIS,y:Object.assign({beginAtZero:true,max:100},AXIS)}})});
+    const avg = e.aspects.map((a,i)=>e.series.reduce((x,s)=>x+s.values[i],0)/e.series.length);
+    mk("cEarlyRadar",{type:"radar",data:{labels:e.aspects,datasets:[{label:"ค่าเฉลี่ยรวม",data:avg,
+      backgroundColor:"rgba(46,109,190,.18)",borderColor:"#1E4C8A",pointBackgroundColor:"#F5A524",borderWidth:2}]},
+      options:{responsive:true,maintainAspectRatio:false,
+        scales:{r:{suggestedMin:60,suggestedMax:100,grid:{color:"#E4EAF4"},angleLines:{color:"#E4EAF4"},pointLabels:{font:{size:12}}}},
+        plugins:{legend:{display:false}}}});
+  },
+  achieve(){
+    const a = DATA.achievement;
+    const sub = a.subjects.map(s=>{
+      const te=s.exam.reduce((x,y)=>x+y,0), tp=s.pass.reduce((x,y)=>x+y,0);
+      return {name:s.name, pct:(tp/te)*100};
+    });
+    mk("cAch",{type:"bar",data:{labels:sub.map(s=>s.name),datasets:[
+      {label:"ร้อยละนักเรียนระดับ 3 ขึ้นไป",data:sub.map(s=>s.pct),
+        backgroundColor:sub.map(s=>s.pct>=90?"#2FA84F":s.pct>=70?"#F5A524":"#EF6B5A"),borderRadius:7}
+    ]},options:baseOpt({indexAxis:"y",plugins:{legend:{display:false}},scales:{x:Object.assign({beginAtZero:true,max:100},AXIS),y:AXIS}})});
+  },
+  national(id, d){
+    const has = d.items.some(i=>i.area!==null && i.area!==undefined);
+    const ds = [{label:"โรงเรียนบ้านโคกม่วย",data:d.items.map(i=>i.school),backgroundColor:"#1E4C8A",borderRadius:7}];
+    if(has) ds.push({label:"ระดับเขตพื้นที่",data:d.items.map(i=>i.area),backgroundColor:"#9DB4D6",borderRadius:7});
+    ds.push({label:"ระดับประเทศ",data:d.items.map(i=>i.nation),backgroundColor:"#EF6B5A",borderRadius:7});
+    mk(id,{type:"bar",data:{labels:d.items.map(i=>i.name),datasets:ds},
+      options:baseOpt({scales:{x:AXIS,y:Object.assign({beginAtZero:true,max:100},AXIS)}})});
+  },
+  rt(){ this.national("cRT", DATA.rt); },
+  nt(){ this.national("cNT", DATA.nt); },
+  onet(){ this.national("cONET", DATA.onet); },
+  rtw(){
+    const d = DATA.rtw;
+    mk("cRTW",{type:"bar",data:{labels:d.rows.map(x=>x.level),
+      datasets:d.levels.map((l,i)=>({label:l,data:d.rows.map(x=>x.v[i]),backgroundColor:d.colors[i],borderRadius:5}))},
+      options:baseOpt({scales:{x:Object.assign({stacked:true},AXIS),y:Object.assign({stacked:true,beginAtZero:true},AXIS)}})});
+    mk("cRTWPie",{type:"doughnut",data:{labels:d.levels,
+      datasets:[{data:d.levels.map((l,i)=>d.rows.reduce((a,b)=>a+b.v[i],0)),backgroundColor:d.colors,borderWidth:3,borderColor:"#fff"}]},
+      options:{responsive:true,maintainAspectRatio:false,cutout:"55%",
+        plugins:{legend:{position:"bottom",labels:{boxWidth:12,usePointStyle:true,pointStyle:"circle",padding:14}}}}});
+  },
+  comp(){
+    const d = DATA.comp, tot = d.gradeTotals.reduce((a,b)=>a+b,0);
+    const pct = d.items.map(i=>({name:i.name, v:(i.excellent.reduce((a,b)=>a+b,0)/tot)*100}));
+    mk("cComp",{type:"radar",data:{labels:pct.map(i=>i.name.replace("ความสามารถใน","")),
+      datasets:[{label:"ร้อยละระดับดีมาก",data:pct.map(i=>i.v),
+        backgroundColor:"rgba(14,148,148,.18)",borderColor:"#0E9494",pointBackgroundColor:"#F5A524",borderWidth:2}]},
+      options:{responsive:true,maintainAspectRatio:false,
+        scales:{r:{suggestedMin:0,suggestedMax:100,grid:{color:"#E4EAF4"},angleLines:{color:"#E4EAF4"}}},
+        plugins:{legend:{display:false}}}});
+  },
+  desire(){
+    const d = DATA.desire;
+    mk("cDesire",{type:"bar",data:{labels:d.rows.map(x=>x.level),
+      datasets:d.levels.map((l,i)=>({label:l,data:d.rows.map(x=>x.v[i]),backgroundColor:d.colors[i],borderRadius:5}))},
+      options:baseOpt({scales:{x:Object.assign({stacked:true},AXIS),y:Object.assign({stacked:true,beginAtZero:true},AXIS)}})});
+    mk("cDesirePie",{type:"doughnut",data:{labels:d.levels,
+      datasets:[{data:d.levels.map((l,i)=>d.rows.reduce((a,b)=>a+b.v[i],0)),backgroundColor:d.colors,borderWidth:3,borderColor:"#fff"}]},
+      options:{responsive:true,maintainAspectRatio:false,cutout:"55%",
+        plugins:{legend:{position:"bottom",labels:{boxWidth:12,usePointStyle:true,pointStyle:"circle",padding:14}}}}});
+  },
+  activity(){
+    const d = DATA.activity;
+    mk("cAct",{type:"bar",data:{labels:d.rows.map(x=>x.level),datasets:[
+      {label:"ผ่าน",data:d.rows.map(x=>x.pass),backgroundColor:"#2FA84F",borderRadius:6},
+      {label:"ไม่ผ่าน",data:d.rows.map(x=>x.total-x.pass),backgroundColor:"#EF6B5A",borderRadius:6}
+    ]},options:baseOpt({indexAxis:"y",scales:{x:Object.assign({beginAtZero:true,stacked:true},AXIS),y:Object.assign({stacked:true},AXIS)}})});
+    const p = d.rows.reduce((a,b)=>a+b.pass,0), t = d.rows.reduce((a,b)=>a+b.total,0);
+    mk("cActPie",{type:"doughnut",data:{labels:["ผ่าน","ไม่ผ่าน"],
+      datasets:[{data:[p,t-p],backgroundColor:["#2FA84F","#EF6B5A"],borderWidth:3,borderColor:"#fff"}]},
+      options:{responsive:true,maintainAspectRatio:false,cutout:"58%",
+        plugins:{legend:{position:"bottom",labels:{boxWidth:12,usePointStyle:true,pointStyle:"circle",padding:14}}}}});
+  }
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   ส่วนที่ 6 : ระบบนำทางแบบหน้าเดียว (SPA)
+   ═══════════════════════════════════════════════════════════════ */
+$("#nav").innerHTML = ROUTES.map(r =>
+  `<button type="button" data-id="${r.id}"><span class="idx">${r.no}</span>${r.short}</button>`).join("");
+
+function go(id){
+  const r = ROUTES.find(x=>x.id===id) || ROUTES[0];
+  clearCharts();
+  $("#view").innerHTML = PAGES[r.id](r);
+  $("#topTitle").textContent = r.title;
+  document.title = r.title + " | โรงเรียนบ้านโคกม่วย";
+  document.querySelectorAll("#nav button").forEach(a=>a.classList.toggle("on", a.dataset.id===r.id));
+  $("#yearChip").textContent = r.id==="students" ? "ปีการศึกษา 2569" : "ปีการศึกษา 2568";
+  const realMap = {overview:true, students:DATA.students.real, early:DATA.early.real, achieve:DATA.achievement.real,
+    rt:DATA.rt.real, nt:DATA.nt.real, onet:DATA.onet.real, rtw:DATA.rtw.real, comp:DATA.comp.real,
+    desire:DATA.desire.real, activity:DATA.activity.real};
+  const chip = $("#dataChip"), v = realMap[r.id];
+  if(v===null){ chip.className="chip warn"; chip.textContent="ข้อมูลบางส่วนเป็นตัวอย่าง"; }
+  else if(v){ chip.className="chip ok"; chip.textContent = r.id==="overview" ? "ข้อมูลจริงครบทุกหมวด" : "ข้อมูลจริง"; }
+  else { chip.className="chip warn"; chip.textContent="ข้อมูลตัวอย่าง รอข้อมูลจริง"; }
+  if(CHARTS[r.id]) CHARTS[r.id]();
+  $("#side").classList.remove("open");
+  $("#backdrop").classList.remove("open");
+  window.scrollTo({top:0, behavior:"instant"});
+}
+$("#nav").addEventListener("click", e=>{
+  const b = e.target.closest("button[data-id]");
+  if(b) go(b.dataset.id);
+});
+$("#view").addEventListener("click", e=>{
+  const b = e.target.closest("[data-go]");
+  if(b) go(b.dataset.go);
+});
+$("#burger").addEventListener("click", ()=>{
+  $("#side").classList.toggle("open");
+  $("#backdrop").classList.toggle("open");
+});
+$("#backdrop").addEventListener("click", ()=>{
+  $("#side").classList.remove("open");
+  $("#backdrop").classList.remove("open");
+});
+go("overview");
+</script>
+</body>
+</html>
